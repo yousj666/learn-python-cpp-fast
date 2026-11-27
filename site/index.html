@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>极速学 Python 与 C++ — Yousj 开源教程</title>
+<meta name="description" content="开源双线编程教程：Python 8 课 + C++ 8 课，每课都有可直接运行的完整代码、常见坑与练习。在线阅读与 GitHub 源码。">
+<link rel="canonical" href="https://yousj.cc/learn/">
+<style>
+  :root {
+    --bg: #131209; --bg-deep: #0c0a05;
+    --surface: #1c1a12; --surface2: #262216;
+    --amber: #f0b429; --amber-deep: #cf9412; --amber-dim: rgba(240,180,41,.12);
+    --ink: #f5efe0; --muted: #a89f8a;
+    --line: #332e1d;
+    --mono: "JetBrains Mono", ui-monospace, "SF Mono", "Cascadia Mono", Consolas, monospace;
+    --sans: "Manrope", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg-deep); color: var(--ink);
+    font-family: var(--sans); font-size: 16px; line-height: 1.7;
+    -webkit-font-smoothing: antialiased; overflow-x: hidden;
+  }
+  body::before {
+    content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background:
+      radial-gradient(900px 480px at 85% -80px, rgba(240,180,41,.14), transparent 60%),
+      radial-gradient(700px 500px at -120px 30%, rgba(240,180,41,.07), transparent 60%),
+      linear-gradient(180deg, #171408 0%, var(--bg) 340px, var(--bg) 100%);
+  }
+  a { color: inherit; text-decoration: none; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 28px; position: relative; z-index: 1; }
+  :focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+
+  .top { position: fixed; top: 12px; left: 0; right: 0; z-index: 30; pointer-events: none; }
+  .top .wrap {
+    pointer-events: auto; display: flex; align-items: center; height: 56px; gap: 12px;
+    background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,0) 60%), linear-gradient(180deg, rgba(26,24,15,.72), rgba(15,13,8,.78));
+    backdrop-filter: blur(16px) saturate(1.3); -webkit-backdrop-filter: blur(16px) saturate(1.3);
+    border: 1px solid rgba(245,239,224,.13); border-radius: 999px;
+    padding: 0 12px 0 16px; max-width: 1120px;
+    box-shadow: 0 10px 28px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.12);
+  }
+  .mark { width: 32px; height: 32px; border-radius: 50%; background: var(--amber); color: #131209; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px; flex-shrink: 0; }
+  .top b { font-size: 14px; letter-spacing: .5px; white-space: nowrap; }
+  .top nav { margin-left: auto; display: flex; gap: 4px; align-items: center; }
+  .top nav a { font-size: 14px; color: var(--muted); padding: 6px 12px; border-radius: 999px; white-space: nowrap; }
+  .top nav a:hover { color: var(--ink); background: rgba(245,239,224,.08); }
+
+  .hero { padding: 168px 0 56px; text-align: left; }
+  .kicker { font-family: var(--mono); font-size: 13px; letter-spacing: 3px; color: var(--amber); text-transform: uppercase; }
+  .hero h1 { font-size: clamp(38px, 6vw, 64px); line-height: 1.15; font-weight: 800; margin: 18px 0 8px; }
+  .hero h1 .amp { color: var(--amber); }
+  .hero .sub { font-size: clamp(17px, 2.4vw, 21px); color: var(--muted); max-width: 720px; }
+  .hero .sub b { color: var(--ink); }
+  .cta { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 34px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 10px; font-weight: 700; font-size: 16px;
+    padding: 13px 26px; border-radius: 999px; border: 1px solid transparent; transition: transform .18s ease, box-shadow .18s ease;
+  }
+  .btn:hover { transform: translateY(-2px); }
+  .btn-amber { background: var(--amber); color: #131209; box-shadow: 0 12px 30px rgba(240,180,41,.25); }
+  .btn-ghost { border-color: rgba(245,239,224,.25); color: var(--ink); background: rgba(245,239,224,.04); }
+  .chips { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 30px; }
+  .chip {
+    font-family: var(--mono); font-size: 13px; color: var(--muted);
+    border: 1px solid var(--line); border-radius: 999px; padding: 5px 14px; background: rgba(28,26,18,.6);
+  }
+  .chip b { color: var(--amber); font-weight: 700; }
+
+  .tracks { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; padding: 26px 0 10px; }
+  @media (max-width: 860px) { .tracks { grid-template-columns: 1fr; } }
+  .track {
+    background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,0) 40%), var(--surface);
+    border: 1px solid var(--line); border-radius: 22px; padding: 28px 26px 20px;
+    box-shadow: 0 18px 40px rgba(0,0,0,.35);
+  }
+  .track header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 6px; }
+  .track h2 { font-size: 27px; font-weight: 800; }
+  .track .tag { font-family: var(--mono); font-size: 12px; color: var(--amber); border: 1px solid rgba(240,180,41,.4); padding: 2px 10px; border-radius: 999px; }
+  .track p.why { color: var(--muted); font-size: 14.5px; margin-bottom: 18px; }
+  .lesson {
+    display: flex; align-items: center; gap: 14px; padding: 13px 14px; border-radius: 14px;
+    border: 1px solid transparent; transition: background .15s ease, border-color .15s ease, transform .15s ease;
+  }
+  .lesson:hover { background: var(--surface2); border-color: var(--line); transform: translateX(4px); }
+  .lesson .num { font-family: var(--mono); font-size: 13px; color: var(--amber); background: var(--amber-dim); border-radius: 8px; padding: 3px 8px; flex-shrink: 0; }
+  .lesson .ltext { display: flex; flex-direction: column; line-height: 1.45; min-width: 0; }
+  .lesson .ltext b { font-size: 15.5px; }
+  .lesson .ltext small { color: var(--muted); font-size: 13px; }
+  .lesson .arrow { margin-left: auto; color: var(--muted); flex-shrink: 0; }
+  .lesson:hover .arrow { color: var(--amber); }
+
+  .how { margin: 44px 0 8px; background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,0) 40%), var(--surface); border: 1px solid var(--line); border-radius: 22px; padding: 30px 30px 14px; box-shadow: 0 18px 40px rgba(0,0,0,.35); }
+  .how h2 { font-size: 24px; margin-bottom: 14px; }
+  .how ol { list-style: none; counter-reset: step; }
+  .how li { counter-increment: step; padding: 10px 0 10px 52px; position: relative; color: var(--muted); border-top: 1px dashed var(--line); }
+  .how li:first-child { border-top: none; }
+  .how li b { color: var(--ink); }
+  .how li::before {
+    content: counter(step, decimal-leading-zero); position: absolute; left: 0; top: 10px;
+    font-family: var(--mono); font-size: 13px; color: var(--amber); background: var(--amber-dim);
+    border-radius: 8px; padding: 3px 8px;
+  }
+  .how code { font-family: var(--mono); font-size: 13.5px; background: var(--bg-deep); border: 1px solid var(--line); border-radius: 6px; padding: 1px 7px; color: var(--ink); }
+
+  footer { margin-top: 56px; border-top: 1px solid var(--line); padding: 30px 0 42px; color: var(--muted); font-size: 14px; }
+  footer .frow { display: flex; gap: 10px 26px; flex-wrap: wrap; align-items: center; }
+  footer a { color: var(--muted); }
+  footer a:hover { color: var(--amber); }
+  footer .sep { opacity: .4; }
+</style>
+</head>
+<body>
+
+<div class="top"><div class="wrap">
+  <span class="mark">Y</span><b>YOUSJ.CC</b>
+  <nav>
+    <a href="https://yousj.cc/">首页</a>
+    <a href="https://github.com/yousj666/learn-python-cpp-fast" target="_blank" rel="noopener">GitHub 仓库</a>
+  </nav>
+</div></div>
+
+<div class="wrap">
+  <section class="hero">
+    <div class="kicker">Open Source Course · 开源教程</div>
+    <h1>极速学 Python <span class="amp">&amp;</span> C++</h1>
+    <p class="sub">两条线各 8 课，从零基础到写出完整项目。每课都有<b>能直接运行的完整代码</b>、常见坑提醒和练习题——不堆概念，只讲能马上用上的东西。</p>
+    <div class="cta">
+      <a class="btn btn-amber" href="https://github.com/yousj666/learn-python-cpp-fast" target="_blank" rel="noopener">★ 在 GitHub 上打开仓库</a>
+      <a class="btn btn-ghost" href="#tracks">先看课程目录 ↓</a>
+    </div>
+    <div class="chips">
+      <span class="chip"><b>16</b> 课完整教程</span>
+      <span class="chip"><b>130+</b> 段代码全部实测可运行</span>
+      <span class="chip"><b>2</b> 个完整实战项目</span>
+      <span class="chip">MIT 开源 · 免费</span>
+    </div>
+  </section>
+
+  <section class="tracks" id="tracks">
+    <div class="track">
+      <header><h2>Python 线</h2><span class="tag">快速上手</span></header>
+      <p class="why">上手最快的语言：自动化脚本、数据处理、AI 工具都用它，适合第一门语言。</p>
+        <a class="lesson" href="https://github.com/yousj666/learn-python-cpp-fast/blob/main/python/01-%E7%8E%AF%E5%A2%83%E4%B8%8E%E7%AC%AC%E4%B8%80%E4%B8%AA%E7%A8%8B%E5%BA%8F.md" target="_blank" rel="noopener">
+          <span class="num">01</span>
+          <span class="ltext"><b>环境与第一个程序</b><small>装好 Python，跑出你的第一行代码</small></span>
+          <span class="arrow">→</span>
+        </a>
+        <a class="lesson" href="https://github.com/yousj666/learn-python-cpp-fast/blob/main/python/02-%E5%8F%98%E9%87%8F%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B.md" target="_blank" rel="noopener">
+          <span class="num">02</span>
+          <span class="ltext"><b>变量与数据类型</b><small>数字、字符串、布尔值与类型转换</small></span>
+          <span class="arrow">→</span>
+        </a>
+        <a class="lesson" href="https://github.com/yousj666/learn-python-cpp-fast/blob/main/python/03-%E6%9D%A1%E4%BB%B6%E4%B8%8E%E5%BE%AA%E7%8E%AF.md" target="_blank" rel="noopener">
+          <span class="num">03</span>
+          <span class="ltext"><b>条件与循环</b><small>if 判断、for / while 循环，做一个猜数字游戏</small></span>
+          <span class="arrow">→</span>
+        </a>
+        <a class="lesson" href="https://github.com/yousj666/learn-python-cpp-fast/blob/main/python/04-%E5%87%BD%E6%95%B0.md" target="_blank" rel="noopener">
+          <span class="num">04</span>
+          <span class="ltext"><b>函数</b><small>把代码打包复用：参数、返回值与作用域</small></span>
+          <span class="arrow">→</span>
+        </a>
+        <a class="lesson" href="https://github.com/yousj666/learn-python-cpp-fast/blob/main/python/05-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84.md" target="_blank" rel="noopener">
+          <span class="num">05</span>
+          <span class="ltext"><b>数据结构</b><small>list、dict、set 与字符串处理</small></span>
+          <span class="arrow">→</span>
+        </a>
+        <a class="lesson" href="https://github.com/yousj666/learn-python-cpp-fast/blob/main/python/06-%E6%96%87%E4%BB%B6%E4%B8%8E%E5%BC%82%E5%B8%B8.md" target="_blank" rel="noopener">
+          <span class="num">06</span>
+          <span class="ltext"><b>文件与异常</b><small>读写文件，用 try / except 让程序不崩溃</small></span>
+          <span class="arrow">→</span>
+        </a>
+        <a class="lesson" href="https://github.com/yousj666/learn-python-cpp-fast/blob/main/python/07-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E5%85%A5%E9%97%A8.md" target="_blank" rel="noopener">
+          <span class="num">07</span>
+          <span class="ltext"><b>面向对象入门</b><small>类、对象与继承，把数据和操作打包</small></span>
+          <span class="arrow">→</span>
+        </a>
+        <a class="lesson" href="https://github.com/yousj666/learn-python-cpp-fast/blob/main/python/08-%E5%AE%9E%E6%88%98%E9%A1%B9%E7%9B%AE.md" target="_blank" rel="noopener">
+          <span class="num">08</span>
+          <span class="ltext"><b>实战项目</b><small>命令行待办清单：数据存进文件，关掉不丢失</small></span>
+          <span class="arrow">→</span>
+        </a>
+    </div>
+    <div class="track">
+      <header><h2>C++ 线</h2><span class="tag">打牢底层</span></header>
+      <p class="why">最贴近计算机底层的通用语言：游戏引擎、操作系统、高性能服务都离不开它。</p>
+        <a class="lesson" href="https://github.com/yousj666/learn-python-cpp-fast/blob/main/cpp/01-%E7%8E%AF%E5%A2%83%E4%B8%8E%E7%AC%AC%E4%B8%80%E4%B8%AA%E7%A8%8B%E5%BA%8F.md" target="_blank" rel="noopener">
+          <span class="num">01</span>
+          <span class="ltext"><b>环境与第一个程序</b><small>装好编译器，理解「先编译、再运行」</small></span>
+          <span class="arrow">→</span>
+        </a>
+        <a class="lesson" href="https://github.com/yousj666/learn-python-cpp-fast/blob/main/cpp/02-%E5%8F%98%E9%87%8F%E4%B8%8E%E7%B1%BB%E5%9E%8B.md" target="_blank" rel="noopener">
+          <span class="num">02</span>
+          <span class="ltext"><b>变量与类型</b><small>强类型入门：五种基本类型与类型转换</small></span>
+          <span class="arrow">→</span>
+        </a>
+        <a class="lesson" href="https://github.com/yousj666/learn-python-cpp-fast/blob/main/cpp/03-%E6%9D%A1%E4%BB%B6%E4%B8%8E%E5%BE%AA%E7%8E%AF.md" target="_blank" rel="noopener">
+          <span class="num">03</span>
+          <span class="ltext"><b>条件与循环</b><small>if / switch、for / while，做一个猜数字游戏</small></span>
+          <span class="arrow">→</span>
+        </a>
+        <a class="lesson" href="https://github.com/yousj666/learn-python-cpp-fast/blob/main/cpp/04-%E5%87%BD%E6%95%B0%E4%B8%8E%E5%BC%95%E7%94%A8.md" target="_blank" rel="noopener">
+          <span class="num">04</span>
+          <span class="ltext"><b>函数与引用</b><small>函数重载、默认参数与引用传递</small></span>
+          <span class="arrow">→</span>
+        </a>
+        <a class="lesson" href="https://github.com/yousj666/learn-python-cpp-fast/blob/main/cpp/05-%E6%95%B0%E7%BB%84%E4%B8%8E%E5%AD%97%E7%AC%A6%E4%B8%B2.md" target="_blank" rel="noopener">
+          <span class="num">05</span>
+          <span class="ltext"><b>数组与字符串</b><small>数组、vector 与 string 的常用操作</small></span>
+          <span class="arrow">→</span>
+        </a>
+        <a class="lesson" href="https://github.com/yousj666/learn-python-cpp-fast/blob/main/cpp/06-%E6%8C%87%E9%92%88%E4%B8%8E%E5%86%85%E5%AD%98.md" target="_blank" rel="noopener">
+          <span class="num">06</span>
+          <span class="ltext"><b>指针与内存</b><small>地址、解引用、new / delete 与内存泄漏</small></span>
+          <span class="arrow">→</span>
+        </a>
+        <a class="lesson" href="https://github.com/yousj666/learn-python-cpp-fast/blob/main/cpp/07-%E7%B1%BB%E4%B8%8E%E5%AF%B9%E8%B1%A1.md" target="_blank" rel="noopener">
+          <span class="num">07</span>
+          <span class="ltext"><b>类与对象</b><small>封装、构造函数、析构函数与继承</small></span>
+          <span class="arrow">→</span>
+        </a>
+        <a class="lesson" href="https://github.com/yousj666/learn-python-cpp-fast/blob/main/cpp/08-%E5%AE%9E%E6%88%98%E9%A1%B9%E7%9B%AE.md" target="_blank" rel="noopener">
+          <span class="num">08</span>
+          <span class="ltext"><b>实战项目</b><small>命令行通讯录：带文件存储的完整程序</small></span>
+          <span class="arrow">→</span>
+        </a>
+    </div>
+  </section>
+
+  <section class="how">
+    <h2>学习建议</h2>
+    <ol>
+      <li><b>按顺序学。</b>每课都建立在上一课的基础上，不要跳课。</li>
+      <li><b>代码必须亲手敲。</b>Python 存为 <code>demo.py</code> 后运行 <code>python3 demo.py</code>；C++ 存为 <code>demo.cpp</code> 后运行 <code>g++ -std=c++17 -Wall -o demo demo.cpp</code> 再 <code>./demo</code>。只看不敲，等于没学。</li>
+      <li><b>先做练习，再看答案。</b>每课末尾有 2–3 道练习，答案折叠在课文最后。</li>
+      <li><b>节奏：</b>每天 1 课约 1 小时，16 天学完两条线；只赶一门语言就 8 天。</li>
+      <li><b>毕业标准：</b>把第 08 课的实战项目不看原文自己重写一遍，能独立写出来才算过关。</li>
+    </ol>
+  </section>
+
+  <footer>
+    <div class="frow">
+      <span>© 2026 Yousj</span>
+      <span class="sep">·</span>
+      <span>联系邮箱：<a href="mailto:yousj@yousj.cc">yousj@yousj.cc</a></span>
+      <span class="sep">·</span>
+      <a href="https://github.com/yousj666/learn-python-cpp-fast" target="_blank" rel="noopener">GitHub 仓库</a>
+      <span class="sep">·</span>
+      <a href="https://beian.miit.gov.cn" target="_blank" rel="noopener">闽ICP备2024081644号-2</a>
+    </div>
+  </footer>
+</div>
+
+</body>
+</html>
